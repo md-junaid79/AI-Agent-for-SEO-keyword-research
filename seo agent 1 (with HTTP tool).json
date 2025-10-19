@@ -1,0 +1,459 @@
+{
+  "name": "seo agent 1 (with HTTP tool)",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1440,
+        192
+      ],
+      "id": "10870665-8098-49d9-b36a-843227a25ec8",
+      "name": "input a seed keyword",
+      "webhookId": "90f0993e-31ff-4523-8dbc-613465d12b64",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dataforseo.com/v3/keywords_data/google_ads/keywords_for_keywords/live",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[{\n  \"keywords\": [\"{{ $json.chatInput }}\"]\n}]\n",
+        "options": {}
+      },
+      "id": "81b58632-96e8-4754-a91b-f45addce2904",
+      "name": "HTTP Keyword Suggestions",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        -1232,
+        192
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "ksFqf1rKJXrWAA2s",
+          "name": "dataforseo 79"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const tasks = $json.tasks;\nconst output = [];\n\nif (tasks && tasks[0] && tasks[0].result) {\n  const suggestions = tasks[0].result;\n  const keyword = tasks[0].data.keywords ? tasks[0].data.keywords[0] : ($json.Keyword || '');\n\n  for (const sug of suggestions) {\n    output.push({\n      Keyword: keyword,\n      \"Suggested Keyword\": sug.keyword,\n      \"Search Volume\": sug.search_volume || 0,\n      CPC: sug.cpc || 0,\n      Competition: sug.competition || sug.competition_level || ''\n    });\n  }\n}\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1040,
+        192
+      ],
+      "id": "d0e67017-3550-4f04-a113-323fab18fd8a",
+      "name": "Extract Suggestions"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "# Loop over input items and add a new field called 'myNewField' to the JSON of each one\n# for item in _input.all():\n#   item.json.myNewField = 1\nitems = [item['json'] for item in _input.all()]\n\n# Sort by opportunity score (highest first)\nsorted_items = sorted(items, key=lambda x: x['opportunityScore'], reverse=True)[:50]\n\nresult = [{'json': keyword} for keyword in sorted_items]\nreturn result"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        144
+      ],
+      "id": "258d78a6-5ead-4653-9ff2-9e7997eefb79",
+      "name": "TOP 50 OPPURTUNITIES"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1_fOHhUQgcW8eGyGT2e77pA6mtLB7uhoG1_DiKmj2DlA",
+          "mode": "list",
+          "cachedResultName": "callus keyword research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_fOHhUQgcW8eGyGT2e77pA6mtLB7uhoG1_DiKmj2DlA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1232941576,
+          "mode": "list",
+          "cachedResultName": "TOP_50",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_fOHhUQgcW8eGyGT2e77pA6mtLB7uhoG1_DiKmj2DlA/edit#gid=1232941576"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Keyword": "={{ $json.Keyword }}",
+            "Suggested Keyword": "={{ $json['Suggested Keyword'] }}",
+            "Search Volume": "={{ $json['Search Volume'] }}",
+            "CPC": "={{ $json.CPC }}",
+            "Competition": "={{ $json.Competition }}",
+            "opportunityScore": "={{ $json.opportunityScore }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Keyword",
+              "displayName": "Keyword",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Suggested Keyword",
+              "displayName": "Suggested Keyword",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Search Volume",
+              "displayName": "Search Volume",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "CPC",
+              "displayName": "CPC",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Competition",
+              "displayName": "Competition",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "opportunityScore",
+              "displayName": "opportunityScore",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        240,
+        144
+      ],
+      "id": "9fd60615-7606-4055-b632-783a264a1b13",
+      "name": "Append in top 50",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SmZMF4hvnGcpICsP",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9374bb7f-d213-468e-8802-cc4dbb4aa86b",
+              "leftValue": "={{ $json['Search Volume'] }}",
+              "rightValue": 100,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            },
+            {
+              "id": "6efff3a0-5bc3-4886-813e-8327180d3865",
+              "leftValue": "={{ $json.Competition }}",
+              "rightValue": "HIGH",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "5e2b90ad-2e2a-44fd-8dd9-87f85f63ae92",
+              "leftValue": "={{ $json.opportunityScore }}",
+              "rightValue": 15,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -320,
+        336
+      ],
+      "id": "a9b23168-4dbf-4fd7-a055-146778181aff",
+      "name": "filter out bad keywords"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Convert competition text to score\nconst items = $input.all();\n\nreturn items.map(item => {\n  const keyword = item.json;\n  \n  // Competition scoring\n  let competitionScore = 0;\n  if (keyword.Competition === 'LOW') competitionScore = 1;\n  else if (keyword.Competition === 'MEDIUM') competitionScore = 5;\n  else if (keyword.Competition === 'HIGH') competitionScore = 10;\n  \n  // Calculate opportunity score\n  const searchVolume = keyword['Search Volume'] || 0;\n  const cpc = keyword.CPC || 0;\n  \n  // Opportunity = (Volume × CPC) / Competition\n  // Higher volume + Higher CPC + Lower competition = Better opportunity\n  const opportunityScore = searchVolume > 0 && competitionScore > 0\n    ? (searchVolume * (cpc / 10)) / competitionScore\n    : 0;\n  \n  return {\n    json: {\n      ...keyword,\n      competitionScore,\n      opportunityScore: Math.round(opportunityScore * 10) / 10\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -800,
+        192
+      ],
+      "id": "b97bc3ef-4eb8-48ad-95ad-a26ce7c4f907",
+      "name": "Oppurtunity Score (Volume × CPC) / Competition"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1_fOHhUQgcW8eGyGT2e77pA6mtLB7uhoG1_DiKmj2DlA",
+          "mode": "list",
+          "cachedResultName": "callus keyword research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_fOHhUQgcW8eGyGT2e77pA6mtLB7uhoG1_DiKmj2DlA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_fOHhUQgcW8eGyGT2e77pA6mtLB7uhoG1_DiKmj2DlA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Keyword": "={{ $json.Keyword }}",
+            "Suggested Keyword": "={{ $json['Suggested Keyword'] }}",
+            "Search Volume": "={{ $json['Search Volume'] }}",
+            "CPC": "={{ $json.CPC }}",
+            "Competition": "={{ $json.Competition }}",
+            "opportunityScore": "={{ $json.opportunityScore }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Keyword",
+              "displayName": "Keyword",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Suggested Keyword",
+              "displayName": "Suggested Keyword",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Search Volume",
+              "displayName": "Search Volume",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CPC",
+              "displayName": "CPC",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Competition",
+              "displayName": "Competition",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "opportunityScore",
+              "displayName": "opportunityScore",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -560,
+        192
+      ],
+      "id": "52eeba7a-d59b-4bf1-9ab6-2421bb5b59b3",
+      "name": "Append all rows to sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SmZMF4hvnGcpICsP",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## AI Agent for SEO keyword research\n**",
+        "height": 544,
+        "width": 1856
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1488,
+        -16
+      ],
+      "typeVersion": 1,
+      "id": "dfdaa777-91fb-487e-bc79-32dd63028d5a",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "input a seed keyword": {
+      "main": [
+        [
+          {
+            "node": "HTTP Keyword Suggestions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Keyword Suggestions": {
+      "main": [
+        [
+          {
+            "node": "Extract Suggestions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Suggestions": {
+      "main": [
+        [
+          {
+            "node": "Oppurtunity Score (Volume × CPC) / Competition",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TOP 50 OPPURTUNITIES": {
+      "main": [
+        [
+          {
+            "node": "Append in top 50",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "filter out bad keywords": {
+      "main": [
+        [
+          {
+            "node": "TOP 50 OPPURTUNITIES",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Oppurtunity Score (Volume × CPC) / Competition": {
+      "main": [
+        [
+          {
+            "node": "Append all rows to sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append all rows to sheets": {
+      "main": [
+        [
+          {
+            "node": "filter out bad keywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "01c35b26-f301-44a1-9032-e59a591005fd",
+  "meta": {
+    "templateId": "joke_agent_with_http_tool",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "72d48e862c33dfe7e85e426b6a0adcbc4805febb9ca46cd2916515826284c1d6"
+  },
+  "id": "B1xP4fKYKkIKbXoF",
+  "tags": []
+}
