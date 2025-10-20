@@ -37,6 +37,9 @@ After scoring all candidates, a conditional filter removes "bad" keywords that d
 The agent executes a streamlined, 7-step data processing pipeline (The Funnel) to transform the initial input into the final output.
 
 The diagram below illustrates how a large set of keywords (e.g., **1,654 items**) is systematically refined down to the **50 most valuable opportunities**.
+<p align="center">
+  <img src="Screenshot 2025-10-19 161730.png" alt="WORKFLOW FLOW" width="550"/>
+</p>
 
 | Step | Component / Action | Function | Data In / Out (Example) |
 | :--- | :--- | :--- | :--- |
@@ -49,7 +52,6 @@ The diagram below illustrates how a large set of keywords (e.g., **1,654 items**
 | **7. Fetch Top 50 Opportunities** | Final Selection | Sorts the filtered list by **Opportunity Score (DESC)** and extracts the top 50. | 50 items |
 | **8. Append in top 50 sheet** | Google Sheets Action | Appends the final, actionable list to the result sheet. | 50 items |
 
-*(A visual representation of the workflow pipeline is included in the repository as `images.png`.)*
 
 ---
 
