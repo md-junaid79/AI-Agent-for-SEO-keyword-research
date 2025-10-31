@@ -35,10 +35,13 @@ After scoring all candidates, a conditional filter removes "bad" keywords that d
 ## ⚙️ Workflow Architecture and Pipeline
 
 The agent executes a streamlined, 7-step data processing pipeline (The Funnel) to transform the initial input into the final output.
+<p >
+  <img src="n8n workflow.png" alt="N8N FLOW" width="950"/>
+</p>
 
 The diagram below illustrates how a large set of keywords (e.g., **1,654 items**) is systematically refined down to the **50 most valuable opportunities**.
 <p align="center">
-  <img src="Screenshot 2025-10-19 161730.png" alt="WORKFLOW FLOW" width="550"/>
+  <img src="Screenshot 2025-10-19 161730.png" alt="WORKFLOW FLOW" width="650"/>
 </p>
 
 | Step | Component / Action | Function | Data In / Out (Example) |
